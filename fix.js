@@ -1,7 +1,7 @@
-//Romaine Raffington 1/8/2018  v0.06
-//Romaine Raffington 1/14/2018  v0.07 salary to Hour added
-//Romaine Raffington 1/29/2018  v0.08 Tweak decimal points position.
-//Romaine Raffington 3/3/2018  v0.09 Added compare. also added bugs.
+//1/8/2018  v0.06
+//1/14/2018  v0.07 salary to Hour added
+//1/29/2018  v0.08 Tweak decimal points position.
+//3/3/2018  v0.09 Added compare. also added bugs.
 //3/21/2018 Attempting to fix bugs, lol.
 // April 1 - stuff worked on
 // September 3 - visual redesign
@@ -25,10 +25,13 @@ let check = document.getElementById("check");
 
 let fullTimeHoursWorked = [2080, 1440, 960, 480, 160];
 let partTimeHoursWorked = [1392, 1044, 696, 348, 116];
+let weeks = [52, 36, 26, 12, 4, 2, 1];
 
 //Graphic Reference locations
 let graphWage = document.getElementById("hourWage");
 let container = document.querySelector(".container");
+let rate = graphWage.value;
+let weekRate = rate * customForm.value;
 
 //Input field has focus
 wage.focus();
@@ -66,29 +69,28 @@ function getChart() {
   let chart = document.querySelector("#chart");
   chart.style.visibility = "inherit";
   chart.innerHTML = "";
-  //Salary Information for full time hours
+  //Update values
+  rate = graphWage.value;
+  weekRate = rate * customForm.value;
 
   if (status.classList.value == "custom") {
-    console.log("custom");
+    graphData(weekRate, weeks);
   } else if (status.classList.value == "full") {
-    console.log("full");
-    graphData();
+    graphData(rate, fullTimeHoursWorked);
   } else if (status.classList.value == "part") {
-    console.log("part");
-    graphData();
+    graphData(rate, partTimeHoursWorked);
   } else if (status.classList.value == "annual") {
-    console.log("annaul");
+    chart.style.display = "none";
   } else if (status.classList.value == "compare") {
-    console.log("compare");
+    graphData(weekRate, fullTimeHoursWorked);
   }
 
-  function graphData() {
-    let hourlyRate = graphWage.value;
-    let oneYear = Math.floor(hourlyRate * fullTimeHoursWorked[0]);
-    let nineMonth = Math.floor(hourlyRate * fullTimeHoursWorked[1]);
-    let sixMonth = Math.floor(hourlyRate * fullTimeHoursWorked[2]);
-    let threeMonth = Math.floor(hourlyRate * fullTimeHoursWorked[3]);
-    let oneMonth = Math.floor(hourlyRate * fullTimeHoursWorked[4]);
+  function graphData(rate, dataSet) {
+    let oneYear = Math.floor(rate * dataSet[0]);
+    let nineMonth = Math.floor(rate * dataSet[1]);
+    let sixMonth = Math.floor(rate * dataSet[2]);
+    let threeMonth = Math.floor(rate * dataSet[3]);
+    let oneMonth = Math.floor(rate * dataSet[4]);
 
     if (graphWage.value > 0) {
       var options = {
@@ -136,11 +138,12 @@ function ftSalary() {
                             <p><strong>Please insert a Numerical Value.</strong></p>
                             </p>
                             </div>`;
-  } else if (wage.value.length > 0) {
-    let oneYear = Math.floor(wage.value * 2080);
-    let sixMonth = Math.floor(wage.value * 960);
-    let threeMonth = Math.floor(wage.value * 480);
-    let oneMonth = Math.floor(wage.value * 160);
+  } else if (wage.value > 0) {
+    let oneYear = Math.floor(wage.value * fullTimeHoursWorked[0]);
+    let nineMonth = Math.floor(wage.value * fullTimeHoursWorked[1]);
+    let sixMonth = Math.floor(wage.value * fullTimeHoursWorked[2]);
+    let threeMonth = Math.floor(wage.value * fullTimeHoursWorked[3]);
+    let oneMonth = Math.floor(wage.value * fullTimeHoursWorked[4]);
     let weeklyCheck = Math.floor(wage.value * 40);
     let overTime = wage.value * 1.5;
     let biWeekly = Math.floor(wage.value * 80);
@@ -150,6 +153,7 @@ function ftSalary() {
                             <hr>
                             <p>
                             <strong class="title">Annual Salary:</strong><span class="dollar">$</span>${oneYear.toLocaleString()}<br>
+                            <strong class="title">9 Month Salary:</strong><span class="dollar">$</span>${nineMonth.toLocaleString()}<br>
                             <strong class="title">6 Month Salary:</strong><span class="dollar">$</span>${sixMonth.toLocaleString()}<br>
                             <strong class="title">3 Month Salary:</strong><span class="dollar">$</span>${threeMonth.toLocaleString()}<br>
                             <strong class="title">1 Month Salary:</strong><span class="dollar">$</span>${oneMonth.toLocaleString()}<br>
@@ -196,6 +200,7 @@ function ptSalary() {
                             <hr>
                             <p>
                             <strong class="title">Annual Salary:</strong><span class="dollar">$</span>${oneYear.toLocaleString()}<br>
+                            <strong class="title">9 Month Salary:</strong><span class="dollar">$</span>${nineMonth.toLocaleString()}<br>
                             <strong class="title">6 Month Salary:</strong><span class="dollar">$</span>${sixMonth.toLocaleString()}<br>
                             <strong class="title">3 Month Salary:</strong><span class="dollar">$</span>${threeMonth.toLocaleString()}<br>
                             <strong class="title">1 Month Salary:</strong><span class="dollar">$</span>${oneMonth.toLocaleString()}<br>
@@ -219,40 +224,47 @@ function ptSalary() {
 }
 
 function customHours() {
-  if (isNaN(wage.value) || isNaN(customForm.value)) {
+  let pay = wage.value;
+  let hours = customForm.value;
+  //check to ensure values input are numbers.
+  if (isNaN(pay) || isNaN(hours)) {
     output.style.display = "inherit";
     output.innerHTML = `<div id ="outContainer">
                             <p>
                             <p><strong>Please insert a Numerical Value.</strong></p>
                             </p>
                             </div>`;
-  } else if (wage.value.length > 0) {
+  } else if (pay > 0) {
     output.style.display = "inherit";
-    let salary = wage.value * customForm.value;
+    // Salary per week
+    let salary = pay * hours;
     output.innerHTML = `<div id ="outContainer">
-                            <h4> Hourly Rate: ${wage.value}</h4>
+                            <h4> Hourly Rate: ${pay}</h4>
                             <hr>
                             <p>
                             <strong class="title">Annual Salary:</strong><span class="dollar">$</span>${(
-                              salary * 52
+                              salary * weeks[0]
+                            ).toLocaleString()}<br>
+                            <strong class="title">9 Month Salary:</strong><span class="dollar">$</span>${(
+                              salary * weeks[1]
                             ).toLocaleString()}<br>
                             <strong class="title">6 Month Salary:</strong><span class="dollar">$</span>${(
-                              salary * 26
+                              salary * weeks[2]
                             ).toLocaleString()}<br>
                             <strong class="title">3 Month Salary:</strong><span class="dollar">$</span>${(
-                              salary * 12
+                              salary * weeks[3]
                             ).toLocaleString()}<br>
                             <strong class="title">1 Month Salary:</strong><span class="dollar">$</span>${(
-                              salary * 4
+                              salary * weeks[4]
                             ).toLocaleString()}<br>
                             <strong class="title">Bi-Weekly Check:</strong><span class="dollar">$</span>${(
-                              salary * 2
+                              salary * weeks[5]
                             ).toLocaleString()}<br>
                             <strong class="title">Weekly Check:</strong><span class="dollar">$</span>${(
-                              salary * 1
+                              salary * weeks[6]
                             ).toLocaleString()}<br>
                             <strong class="title">Overtime Rate:</strong><span class="dollar">$</span>${(
-                              wage.value * 1.5
+                              pay * 1.5
                             ).toLocaleString()}<br>
                             </p>
                         </div>`;
@@ -291,18 +303,20 @@ function compareSalaries() {
   let hour1 = hourWage.value;
   let hour2 = customForm.value;
 
-  let oneYear = Math.floor(hour1 * 2080);
-  let sixMonth = Math.floor(hour1 * 960);
-  let threeMonth = Math.floor(hour1 * 480);
-  let oneMonth = Math.floor(hour1 * 160);
+  let oneYear = Math.floor(hour1 * fullTimeHoursWorked[0]);
+  let nineMonth = Math.floor(hour1 * fullTimeHoursWorked[1]);
+  let sixMonth = Math.floor(hour1 * fullTimeHoursWorked[2]);
+  let threeMonth = Math.floor(hour1 * fullTimeHoursWorked[3]);
+  let oneMonth = Math.floor(hour1 * fullTimeHoursWorked[4]);
   let weeklyCheck = Math.floor(hour1 * 40);
   let overTime = hour1 * 1.5;
   let biWeekly = Math.floor(hour1 * 80);
 
-  let oneYear2 = Math.floor(hour2 * 2080);
-  let sixMonth2 = Math.floor(hour2 * 960);
-  let threeMonth2 = Math.floor(hour2 * 480);
-  let oneMonth2 = Math.floor(hour2 * 160);
+  let oneYear2 = Math.floor(hour2 * fullTimeHoursWorked[0]);
+  let nineMonth2 = Math.floor(hour2 * fullTimeHoursWorked[1]);
+  let sixMonth2 = Math.floor(hour2 * fullTimeHoursWorked[2]);
+  let threeMonth2 = Math.floor(hour2 * fullTimeHoursWorked[3]);
+  let oneMonth2 = Math.floor(hour2 * fullTimeHoursWorked[4]);
   let weeklyCheck2 = Math.floor(hour2 * 40);
   let overTime2 = hour2 * 1.5;
   let biWeekly2 = Math.floor(hour2 * 80);
@@ -316,21 +330,24 @@ function compareSalaries() {
                         
                         <strong class="title">Annual Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneYear.toLocaleString()}</span> 
                         | <span class="dollar">$</span><span class="rateColor2">${oneYear2.toLocaleString()}</span><br>
+
+                        <strong class="title">9 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${nineMonth2.toLocaleString()}</span> 
+                        | <span class="dollar">$</span><span class="rateColor2">${nineMonth.toLocaleString()}</span><br>
                         
-                        <strong class="title">Six Month Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${sixMonth.toLocaleString()}</span> 
+                        <strong class="title">6 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${sixMonth.toLocaleString()}</span> 
                         | <span class="dollar">$</span><span class="rateColor2">${sixMonth2.toLocaleString()}</span><br>
 
-                        <strong class="title">Three Month Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${threeMonth.toLocaleString()}</span> 
+                        <strong class="title">3 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${threeMonth.toLocaleString()}</span> 
                         | <span class="dollar">$</span><span class="rateColor2">${threeMonth2.toLocaleString()}</span><br>
 
-                        <strong class="title">One Month Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneMonth.toLocaleString()}</span> 
+                        <strong class="title">1 Month Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneMonth.toLocaleString()}</span> 
                         | <span class="dollar">$</span><span class="rateColor2">${oneMonth2.toLocaleString()}</span><br>
-
-                        <strong class="title">Weekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${weeklyCheck.toLocaleString()}</span> 
-                        | <span class="dollar">$</span><span class="rateColor2">${weeklyCheck2.toLocaleString()}</span><br>
 
                         <strong class="title">Biweekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${biWeekly.toLocaleString()}</span> 
                         | <span class="dollar">$</span><span class="rateColor2">${biWeekly2.toLocaleString()}</span><br>
+
+                        <strong class="title">Weekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${weeklyCheck.toLocaleString()}</span> 
+                        | <span class="dollar">$</span><span class="rateColor2">${weeklyCheck2.toLocaleString()}</span><br>
 
                         <strong class="title">Overtime Rate:</strong><span class="dollar">$</span> <span class="rateColor1">${overTime.toLocaleString()}</span> 
                         | <span class="dollar">$</span><span class="rateColor2">${overTime2.toLocaleString()}</span><br>
@@ -380,7 +397,7 @@ function addCompare() {
   customForm.style.display = "inherit";
   hourWage.placeholder = "Hourly Rate #1";
   customForm.placeholder = "Hourly Rate #2";
-  status.innerHTML = "<strong>Compare Rates</strong>";
+  // status.innerHTML = "<strong>Compare Rates</strong>";
   //change button color when clicked
   ft.classList.remove("btn-danger");
   ft.classList.add("btn-primary");
@@ -457,9 +474,8 @@ function addToHourly() {
   compare.classList.remove("btn-danger");
   status.classList.add("annual");
   wage.value = "";
-  status.innerHTML = "<strong>Annual Salary</strong>";
   customForm.style.display = "none";
-  wage.placeholder = "Annual Salary";
+  wage.placeholder = "Annual Salary: No Commas";
 
   //change button colors
   ft.classList.remove("btn-danger");
