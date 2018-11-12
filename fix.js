@@ -37,20 +37,22 @@ let weekRate = rate * customForm.value;
 wage.focus();
 
 // Event listner for buttons.
+// Main event listners in check status
 check.addEventListener("click", checkStatus);
+
+//Buttons
 ft.addEventListener("click", addFT);
 pt.addEventListener("click", addPT);
 customButton.addEventListener("click", addCustom);
 plug.addEventListener("click", behance);
 salaryToHour.addEventListener("click", addToHourly);
 compare.addEventListener("click", addCompare);
-// Event listners for Graph
-check.addEventListener("click", getChart);
 
 // Checks class to see which function needs to run.
 function checkStatus() {
   if (status.classList.value == "custom") {
     customHours();
+    getChart();
   } else if (status.classList.value == "full") {
     ftSalary();
     getChart();
@@ -60,19 +62,21 @@ function checkStatus() {
   } else if (status.classList.value == "annual") {
     findHourly();
   } else if (status.classList.value == "compare") {
-    compareSalaries();
+    console.log();
+    compareSalaries(status.classList.value);
+    compareGraph();
   }
 }
 
 function getChart() {
   //Clear old chart
-  let chart = document.querySelector("#chart");
-  chart.style.visibility = "inherit";
+  chart.style.display = "inherit";
   chart.innerHTML = "";
-  //Update values
+  //Update values when function runs
   rate = graphWage.value;
   weekRate = rate * customForm.value;
 
+  // Check to see which dataset to use for graph
   if (status.classList.value == "custom") {
     graphData(weekRate, weeks);
   } else if (status.classList.value == "full") {
@@ -82,7 +86,6 @@ function getChart() {
   } else if (status.classList.value == "annual") {
     chart.style.display = "none";
   } else if (status.classList.value == "compare") {
-    graphData(weekRate, fullTimeHoursWorked);
   }
 
   function graphData(rate, dataSet) {
@@ -92,7 +95,7 @@ function getChart() {
     let threeMonth = Math.floor(rate * dataSet[3]);
     let oneMonth = Math.floor(rate * dataSet[4]);
 
-    if (graphWage.value > 0) {
+    if (graphWage.value) {
       var options = {
         chart: {
           height: 400,
@@ -125,9 +128,33 @@ function getChart() {
 
       let chart = new ApexCharts(document.querySelector("#chart"), options);
       chart.render();
-      graphWage.classList.add("list-created");
     }
   }
+}
+
+// Two dataSet Graph
+function compareGraph() {
+  var options = {
+    chart: {
+      type: "line"
+    },
+    series: [
+      {
+        name: "Salary 1",
+        data: [1.4, 2, 2.5, 1.5, 2.5, 2.8]
+      },
+      {
+        name: "Salary 2",
+        data: [20, 29, 37, 36, 44]
+      }
+    ],
+    xaxis: {
+      categories: [1, 3, 6, 9, 12]
+    }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
 }
 
 function ftSalary() {
@@ -360,7 +387,8 @@ function addCustom() {
   customForm.focus();
   wage.value = "";
   customForm.value = "";
-  chart.style.visibility = "hidden";
+  // hide chart from previous salary
+  chart.style.display = "none";
   chart.innerHTML = "";
   output.style.display = "none";
   warning.style.display = "none";
@@ -391,7 +419,9 @@ function addCompare() {
   status.classList.remove("custom");
   status.classList.remove("annual");
   customForm.style.display = "none";
-  chart.style.visibility = "hidden";
+  chart.style.display = "none";
+  output.style.display = "none";
+  warning.style.display = "none";
   chart.innerHTML = "";
   status.classList.add("compare");
   customForm.style.display = "inherit";
@@ -412,7 +442,7 @@ function addCompare() {
 // Change class of status
 function addPT() {
   wage.value = "";
-  chart.style.visibility = "hidden";
+  chart.style.display = "none";
   chart.innerHTML = "";
   status.classList.remove("full");
   status.classList.remove("custom");
@@ -437,7 +467,7 @@ function addPT() {
 
 function addFT() {
   wage.value = "";
-  chart.style.visibility = "hidden";
+  chart.style.display = "none";
   chart.innerHTML = "";
   status.classList.remove("part");
   status.classList.remove("custom");
@@ -462,7 +492,7 @@ function addFT() {
 }
 
 function addToHourly() {
-  chart.style.visibility = "hidden";
+  chart.style.display = "none";
   chart.innerHTML = "";
   output2.style.display = "none";
   output.style.display = "none";
