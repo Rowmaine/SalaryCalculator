@@ -16,19 +16,21 @@
     <title>Salary Calculator - Find Your Salary</title>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=UA-108096856-1"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
+    <!--
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=UA-108096856-1"
+      ></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
 
-      gtag("config", "UA-108096856-1");
-    </script>
+        gtag("config", "UA-108096856-1");
+      </script>
+    -->
 
     <!-- stylesheet -->
     <link
@@ -77,10 +79,11 @@
 
       <p id="status" class="full"><strong>Full-Time Hours</strong></p>
 
-      <!-- Chart Container -->
-      <div id="chart"></div>
-      <!-- Chart Container -->
+      <div id="salaryOutput"></div>
+      <div id="insertB"></div>
+      <div id="chart" class="create"></div>
 
+      <div id="intWarning"></div>
       <div id="output" class="mt-4"></div>
       <div id="output2" class="mt-4"></div>
       <p id="warning" class="mt-1">
@@ -111,7 +114,13 @@
         background: rgba(255, 255, 255, 0.7);
         padding: 10px;
         border-radius: 5px;
-        display: none;
+        visibility: hidden;
+      }
+      #compareChart {
+        margin: 70px 0px 0px 0px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 5px;
+        padding: 10px;
       }
 
       h2,
@@ -138,10 +147,13 @@
       }
 
       #warning,
-      #output {
+      #output,
+      #intWarning,
+      #salaryOutput {
         display: none;
-        background: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.9);
         padding: 10px;
+        margin-top: 25px;
         border-radius: 5px;
       }
 
@@ -159,13 +171,13 @@
       }
 
       .rateColor1 {
-        color: black;
-        font-weight: 600;
+        color: #008ffb;
+        font-weight: bold;
       }
 
       .rateColor2 {
-        color: gray;
-        font-weight: 600;
+        color: #56daad;
+        font-weight: bold;
       }
 
       footer {

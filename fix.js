@@ -6,7 +6,9 @@
 // April 1 - stuff worked on
 // September 3 - visual redesign
 // Added Apexchart 11/7/2018
-// 11/8/2018Apexchat improvements
+// 11/8/2018 Apexchat improvements
+// 11/12/2018 Fix some stuff, broke some stuff
+// 11/14/2018 Fixed Graph issue, graph now updates correctly.
 
 // Reference locations
 let wage = document.getElementById("hourWage");
@@ -22,6 +24,9 @@ let customForm = document.getElementById("customForm");
 let salaryToHour = document.getElementById("salaryHour");
 let compare = document.getElementById("compare");
 let check = document.getElementById("check");
+let intWarning = document.getElementById("intWarning");
+let updateChart = document.querySelector("#chart");
+let salOut = document.querySelector("#salaryOutput");
 
 let fullTimeHoursWorked = [2080, 1440, 960, 480, 160];
 let partTimeHoursWorked = [1392, 1044, 696, 348, 116];
@@ -32,6 +37,10 @@ let graphWage = document.getElementById("hourWage");
 let container = document.querySelector(".container");
 let rate = graphWage.value;
 let weekRate = rate * customForm.value;
+
+//Compare Chart reference values
+let hour1 = hourWage.value;
+let hour2 = customForm.value;
 
 //Input field has focus
 wage.focus();
@@ -48,29 +57,73 @@ plug.addEventListener("click", behance);
 salaryToHour.addEventListener("click", addToHourly);
 compare.addEventListener("click", addCompare);
 
+function intWarn() {
+  intWarning.style.display = "inherit";
+  intWarning.innerHTML = `<div id ="outContainer">
+                          <p>
+                          <p><strong>Please insert a Numerical Value.</strong></p>
+                          </p>
+                          </div>`;
+}
+
 // Checks class to see which function needs to run.
 function checkStatus() {
+  //CUSTOM
   if (status.classList.value == "custom") {
-    customHours();
-    getChart();
+    if (isNaN(wage.value)) {
+      warning.style.display = "none";
+      intWarn();
+    } else {
+      customHours();
+      getChart();
+      console.log("custom function");
+    }
+    //FULL TIME
   } else if (status.classList.value == "full") {
-    ftSalary();
-    getChart();
+    if (isNaN(wage.value) || wage.value == "") {
+      warning.style.display = "none";
+      //out Int Warning
+      intWarn();
+    } else {
+      ftSalary();
+      getChart();
+      console.log("full function");
+    }
+    // PART TIME
   } else if (status.classList.value == "part") {
-    ptSalary();
-    getChart();
+    if (isNaN(wage.value) || wage.value == "") {
+      warning.style.display = "none";
+      intWarn();
+    } else {
+      ptSalary();
+      getChart();
+      console.log("part function");
+    }
+    //ANNUAL
   } else if (status.classList.value == "annual") {
-    findHourly();
+    if (isNaN(wage.value) || wage.value == "") {
+      warning.style.display = "none";
+      intWarn();
+    } else {
+      findHourly();
+      console.log("annual function");
+    }
+    //COMPARE
   } else if (status.classList.value == "compare") {
-    console.log();
-    compareSalaries(status.classList.value);
-    compareGraph();
+    if (isNaN(wage.value) || wage.value == "") {
+      warning.style.display = "none";
+      intWarn();
+    } else {
+      compareGraph(fullTimeHoursWorked);
+      compareSalaries(hour1, hour2);
+    }
   }
 }
 
+//Create Graph for Single Salaries
 function getChart() {
   //Clear old chart
-  chart.style.display = "inherit";
+  chart.style.visibility = "inherit";
   chart.innerHTML = "";
   //Update values when function runs
   rate = graphWage.value;
@@ -84,8 +137,6 @@ function getChart() {
   } else if (status.classList.value == "part") {
     graphData(rate, partTimeHoursWorked);
   } else if (status.classList.value == "annual") {
-    chart.style.display = "none";
-  } else if (status.classList.value == "compare") {
   }
 
   function graphData(rate, dataSet) {
@@ -96,7 +147,7 @@ function getChart() {
     let oneMonth = Math.floor(rate * dataSet[4]);
 
     if (graphWage.value) {
-      var options = {
+      let options = {
         chart: {
           height: 400,
           type: "line"
@@ -132,20 +183,33 @@ function getChart() {
   }
 }
 
-// Two dataSet Graph
-function compareGraph() {
-  var options = {
+function compareGraph(time) {
+  chart.style.visibility = "inherit";
+  let newData1 = new Array();
+  let newData2 = new Array();
+  let hour1 = hourWage.value;
+  let hour2 = customForm.value;
+
+  //Calculating and values pushing to empty array
+  time.forEach(hour => {
+    let sal1 = hour1 * hour;
+    let sal2 = hour2 * hour;
+    newData1.push(sal1);
+    newData2.push(sal2);
+  });
+
+  let options = {
     chart: {
       type: "line"
     },
     series: [
       {
         name: "Salary 1",
-        data: [1.4, 2, 2.5, 1.5, 2.5, 2.8]
+        data: [newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
       },
       {
         name: "Salary 2",
-        data: [20, 29, 37, 36, 44]
+        data: [newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
       }
     ],
     xaxis: {
@@ -153,101 +217,118 @@ function compareGraph() {
     }
   };
 
-  var chart = new ApexCharts(document.querySelector("#chart"), options);
-  chart.render();
+  if (updateChart.classList.value === "create") {
+    let chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+    updateChart.classList.replace("create", "update");
+  } else if ((updateChart.classList.value = "update")) {
+    let chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+    chart.updateSeries([
+      {
+        name: "Salary 1",
+        data: [newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
+      },
+      {
+        name: "Salary 2",
+        data: [newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
+      }
+    ]);
+  }
+}
+
+function calResults(
+  oneYear,
+  nineMonth,
+  sixMonth,
+  threeMonth,
+  oneMonth,
+  weeklyCheck,
+  overTime,
+  biWeekly
+) {
+  output.innerHTML = `<div id ="outContainer">
+                            <h4> Hourly Rate: ${wage.value}</h4>
+                            <hr>
+                            <p>
+                            <strong class="title">Annual Salary:</strong><span class="dollar">$</span>${oneYear.toLocaleString()}<br>
+                            <strong class="title">9 Month Salary:</strong><span class="dollar">$</span>${nineMonth.toLocaleString()}<br>
+                            <strong class="title">6 Month Salary:</strong><span class="dollar">$</span>${sixMonth.toLocaleString()}<br>
+                            <strong class="title">3 Month Salary:</strong><span class="dollar">$</span>${threeMonth.toLocaleString()}<br>
+                            <strong class="title">1 Month Salary:</strong><span class="dollar">$</span>${oneMonth.toLocaleString()}<br>
+                            <strong class="title">Bi-Weekly Check:</strong><span class="dollar">$</span>${biWeekly.toLocaleString()}<br>
+                            <strong class="title">Weekly Check:</strong><span class="dollar">$</span>${weeklyCheck.toLocaleString()}<br>
+                            <strong class="title">Overtime Rate:</strong><span class="dollar">$</span>${overTime.toLocaleString()}<br>
+                            </p>
+                        </div>`;
 }
 
 function ftSalary() {
-  if (isNaN(wage.value)) {
-    output.style.display = "inherit";
-    output.innerHTML = `<div id ="outContainer">
-                            <p>
-                            <p><strong>Please insert a Numerical Value.</strong></p>
-                            </p>
-                            </div>`;
-  } else if (wage.value > 0) {
-    let oneYear = Math.floor(wage.value * fullTimeHoursWorked[0]);
-    let nineMonth = Math.floor(wage.value * fullTimeHoursWorked[1]);
-    let sixMonth = Math.floor(wage.value * fullTimeHoursWorked[2]);
-    let threeMonth = Math.floor(wage.value * fullTimeHoursWorked[3]);
-    let oneMonth = Math.floor(wage.value * fullTimeHoursWorked[4]);
-    let weeklyCheck = Math.floor(wage.value * 40);
-    let overTime = wage.value * 1.5;
-    let biWeekly = Math.floor(wage.value * 80);
+  let oneYear = Math.floor(wage.value * fullTimeHoursWorked[0]);
+  let nineMonth = Math.floor(wage.value * fullTimeHoursWorked[1]);
+  let sixMonth = Math.floor(wage.value * fullTimeHoursWorked[2]);
+  let threeMonth = Math.floor(wage.value * fullTimeHoursWorked[3]);
+  let oneMonth = Math.floor(wage.value * fullTimeHoursWorked[4]);
+  let weeklyCheck = Math.floor(wage.value * 40);
+  let overTime = wage.value * 1.5;
+  let biWeekly = Math.floor(wage.value * 80);
 
-    output.innerHTML = `<div id ="outContainer">
-                            <h4> Hourly Rate: ${wage.value}</h4>
-                            <hr>
-                            <p>
-                            <strong class="title">Annual Salary:</strong><span class="dollar">$</span>${oneYear.toLocaleString()}<br>
-                            <strong class="title">9 Month Salary:</strong><span class="dollar">$</span>${nineMonth.toLocaleString()}<br>
-                            <strong class="title">6 Month Salary:</strong><span class="dollar">$</span>${sixMonth.toLocaleString()}<br>
-                            <strong class="title">3 Month Salary:</strong><span class="dollar">$</span>${threeMonth.toLocaleString()}<br>
-                            <strong class="title">1 Month Salary:</strong><span class="dollar">$</span>${oneMonth.toLocaleString()}<br>
-                            <strong class="title">Bi-Weekly Check:</strong><span class="dollar">$</span>${biWeekly.toLocaleString()}<br>
-                            <strong class="title">Weekly Check:</strong><span class="dollar">$</span>${weeklyCheck.toLocaleString()}<br>
-                            <strong class="title">Overtime Rate:</strong><span class="dollar">$</span>${overTime.toLocaleString()}<br>
-                            </p>
-                        </div>`;
+  calResults(
+    oneYear,
+    nineMonth,
+    sixMonth,
+    threeMonth,
+    oneMonth,
+    weeklyCheck,
+    overTime,
+    biWeekly
+  );
 
-    output.style.display = "inherit"; //Output DIV
-    warning.style.display = "inherit"; // Disclaimer
-    ft.style.visibility = "visible"; // Button displays
-    pt.style.visibility = "visible";
-    warning.textContent =
-      "*Results based on 40 hour work week. Gross income, taxes not included.";
+  output.style.display = "inherit"; //Output DIV
+  warning.style.display = "inherit"; // Disclaimer
+  ft.style.visibility = "visible"; // Button displays
+  pt.style.visibility = "visible";
+  warning.textContent =
+    "*Results based on 40 hour work week. Gross income, taxes not included.";
 
-    status.classList.remove("custom");
-    status.classList.remove("part");
-    customForm.style.display = "none";
-    status.classList.add("full");
-    status.innerHTML = "<strong>Full-Time Hours</strong>";
-  }
+  status.classList.remove("custom");
+  status.classList.remove("part");
+  customForm.style.display = "none";
+  status.classList.add("full");
+  status.innerHTML = "<strong>Full-Time Hours</strong>";
 }
 
 function ptSalary() {
-  if (isNaN(wage.value)) {
-    output.style.display = "inherit";
-    output.innerHTML = `<div id ="outContainer">
-                            <p>
-                            <p><strong>Please insert a Numerical Value.</strong></p>
-                            </p>
-                            </div>`;
-  } else if (wage.value.length > 0) {
-    let oneYear = Math.floor(wage.value * partTimeHoursWorked[0]);
-    let nineMonth = Math.floor(wage.value * partTimeHoursWorked[1]);
-    let sixMonth = Math.floor(wage.value * partTimeHoursWorked[2]);
-    let threeMonth = Math.floor(wage.value * partTimeHoursWorked[3]);
-    let oneMonth = Math.floor(wage.value * partTimeHoursWorked[4]);
-    let biWeekly = Math.floor(wage.value * 58);
-    let weeklyCheck = Math.floor(wage.value * 29); //40
-    let overTime = wage.value * 1.5;
-    output.innerHTML = `<div id ="outContainer">
-                            <h4> Hourly Rate: ${wage.value}</h4>
-                            <hr>
-                            <p>
-                            <strong class="title">Annual Salary:</strong><span class="dollar">$</span>${oneYear.toLocaleString()}<br>
-                            <strong class="title">9 Month Salary:</strong><span class="dollar">$</span>${nineMonth.toLocaleString()}<br>
-                            <strong class="title">6 Month Salary:</strong><span class="dollar">$</span>${sixMonth.toLocaleString()}<br>
-                            <strong class="title">3 Month Salary:</strong><span class="dollar">$</span>${threeMonth.toLocaleString()}<br>
-                            <strong class="title">1 Month Salary:</strong><span class="dollar">$</span>${oneMonth.toLocaleString()}<br>
-                            <strong class="title">Bi-Weekly Check:</strong><span class="dollar">$</span>${biWeekly.toLocaleString()}<br>
-                            <strong class="title">Weekly Check:</strong><span class="dollar">$</span>${weeklyCheck.toLocaleString()}<br>
-                            <strong class="title">Overtime Rate:</strong><span class="dollar">$</span>${overTime.toLocaleString()}<br>
-                            </p>
-                        </div>`;
+  let oneYear = Math.floor(wage.value * partTimeHoursWorked[0]);
+  let nineMonth = Math.floor(wage.value * partTimeHoursWorked[1]);
+  let sixMonth = Math.floor(wage.value * partTimeHoursWorked[2]);
+  let threeMonth = Math.floor(wage.value * partTimeHoursWorked[3]);
+  let oneMonth = Math.floor(wage.value * partTimeHoursWorked[4]);
+  let biWeekly = Math.floor(wage.value * 58);
+  let weeklyCheck = Math.floor(wage.value * 29); //40
+  let overTime = wage.value * 1.5;
 
-    warning.style.display = "inherit";
-    output.style.display = "inherit";
-    ft.style.visibility = "visible";
-    pt.style.visibility = "visible";
-    warning.textContent =
-      "*Results based on 29 hour work week. Gross income, taxes not included.";
+  calResults(
+    oneYear,
+    nineMonth,
+    sixMonth,
+    threeMonth,
+    oneMonth,
+    weeklyCheck,
+    overTime,
+    biWeekly
+  );
 
-    status.classList.remove("full");
-    status.classList.add("part");
-    status.innerHTML = "<strong>Part-Time Hours</strong>";
-  }
+  warning.style.display = "inherit";
+  output.style.display = "inherit";
+  ft.style.visibility = "visible";
+  pt.style.visibility = "visible";
+  warning.textContent =
+    "*Results based on 29 hour work week. Gross income, taxes not included.";
+
+  status.classList.remove("full");
+  status.classList.add("part");
+  status.innerHTML = "<strong>Part-Time Hours</strong>";
 }
 
 function customHours() {
@@ -316,8 +397,8 @@ function findHourly() {
                             </p>
                             </div>`;
   } else {
-    output.style.display = "inherit";
-    output.innerHTML = `<div id ="outContainer">
+    salOut.style.display = "inherit";
+    salOut.innerHTML = `<div id ="outContainer">
                             <p>
                             <strong class="title">Annual Full-time Hourly(40 hours):</strong><span class="dollar">$</span>${fts}<br>
                             <strong class="title">Annual Part-time Hourly(29 Hours)</strong><span class="dollar">$</span>${pts}<br>
@@ -383,15 +464,17 @@ function compareSalaries() {
 
 // Bring up form for custom hour input
 function addCustom() {
+  salOut.style.display = "none";
   customForm.style.display = "inherit";
   customForm.focus();
   wage.value = "";
   customForm.value = "";
   // hide chart from previous salary
-  chart.style.display = "none";
+  chart.style.display = "inherit";
   chart.innerHTML = "";
   output.style.display = "none";
   warning.style.display = "none";
+  intWarning.style.display = "none";
 
   status.classList.remove("full");
   status.classList.remove("part");
@@ -401,7 +484,6 @@ function addCustom() {
   status.classList.add("custom");
   hourWage.placeholder = "Hourly Rate";
   customForm.placeholder = "Custom Hours Per Week";
-  status.innerHTML = "<strong>Custom-Hours</strong>";
   // Change button color when active
   pt.classList.remove("btn-danger");
   pt.classList.add("btn-primary");
@@ -414,20 +496,20 @@ function addCustom() {
 }
 
 function addCompare() {
-  // remove other classes
+  salOut.style.display = "none";
   status.classList.remove("full");
   status.classList.remove("custom");
   status.classList.remove("annual");
   customForm.style.display = "none";
-  chart.style.display = "none";
   output.style.display = "none";
   warning.style.display = "none";
   chart.innerHTML = "";
+  chart.style.visibility = "hidden";
   status.classList.add("compare");
   customForm.style.display = "inherit";
   hourWage.placeholder = "Hourly Rate #1";
   customForm.placeholder = "Hourly Rate #2";
-  // status.innerHTML = "<strong>Compare Rates</strong>";
+  intWarning.style.display = "none";
   //change button color when clicked
   ft.classList.remove("btn-danger");
   ft.classList.add("btn-primary");
@@ -441,8 +523,9 @@ function addCompare() {
 
 // Change class of status
 function addPT() {
+  salOut.style.display = "none";
   wage.value = "";
-  chart.style.display = "none";
+  chart.style.visibility = "hidden";
   chart.innerHTML = "";
   status.classList.remove("full");
   status.classList.remove("custom");
@@ -451,7 +534,7 @@ function addPT() {
   customForm.style.display = "none";
   status.classList.add("part");
   wage.placeholder = "Hourly Rate";
-  status.innerHTML = "<strong>Part-Time Hours</strong>";
+  intWarning.style.display = "none";
   //change button color when clicked
   ft.classList.remove("btn-danger");
   ft.classList.add("btn-primary");
@@ -461,13 +544,12 @@ function addPT() {
   pt.classList.add("btn-danger");
   salaryToHour.classList.remove("btn-danger");
   salaryToHour.classList.add("btn-primary");
-
-  ptSalary();
 }
 
 function addFT() {
+  salOut.style.display = "none";
   wage.value = "";
-  chart.style.display = "none";
+  chart.style.visibility = "hidden";
   chart.innerHTML = "";
   status.classList.remove("part");
   status.classList.remove("custom");
@@ -476,7 +558,7 @@ function addFT() {
   compare.classList.remove("btn-danger");
   customForm.style.display = "none";
   status.classList.add("full");
-  status.innerHTML = "<strong>Full-Time Hours</strong>";
+  intWarning.style.display = "none";
   wage.placeholder = "Hourly Rate";
   //change button color when clicked
   pt.classList.remove("btn-danger");
@@ -487,12 +569,10 @@ function addFT() {
   ft.classList.add("btn-danger");
   salaryToHour.classList.remove("btn-danger");
   salaryToHour.classList.add("btn-primary");
-
-  ftSalary();
 }
 
 function addToHourly() {
-  chart.style.display = "none";
+  chart.style.visibility = "hidden";
   chart.innerHTML = "";
   output2.style.display = "none";
   output.style.display = "none";
@@ -506,6 +586,7 @@ function addToHourly() {
   wage.value = "";
   customForm.style.display = "none";
   wage.placeholder = "Annual Salary: No Commas";
+  intWarning.style.display = "none";
 
   //change button colors
   ft.classList.remove("btn-danger");
@@ -519,7 +600,7 @@ function addToHourly() {
 
 // Open Behance page in new tab
 function behance() {
-  let newJob = window.open(
+  window.open(
     "https://www.behance.net/gallery/59412871/Employ-App-Advertising",
     "_blank"
   );
@@ -531,6 +612,8 @@ function emptyForm() {
     output.style.display = "none";
     warning.style.display = "none";
     plug.style.display = "";
+    chart.style.visibility = "hidden";
+    salOut.style.display = "none";
   }
 }
 

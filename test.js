@@ -1,27 +1,14 @@
-let check = document.getElementById("check");
-
-check.addEventListener("click", compareGraph);
-
-function compareGraph() {
-  var options = {
-    chart: {
-      type: "line"
-    },
-    series: [
-      {
-        name: "Salary 1",
-        data: [1.4, 2, 2.5, 1.5, 2.5, 2.8]
-      },
-      {
-        name: "Salary 2",
-        data: [20, 29, 37, 36, 44]
-      }
-    ],
-    xaxis: {
-      categories: [1, 3, 6, 9, 12]
-    }
-  };
-
-  var chart = new ApexCharts(document.querySelector("#chart"), options);
+function updateSeries() {
+  let chart = new ApexCharts(document.querySelector("#chart"), options);
   chart.render();
+  chart.updateSeries([
+    {
+      name: "Salary 1",
+      data: [newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
+    },
+    {
+      name: "Salary 2",
+      data: [newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
+    }
+  ]);
 }
