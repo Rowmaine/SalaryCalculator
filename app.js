@@ -9,8 +9,9 @@
 // 11/8/2018 Apexchat improvements
 // 11/12/2018 Fix some stuff, broke some stuff
 // 11/14/2018 Fixed Graph issue, graph now updates correctly.
-//11/16/2019 Apexchart fully intergared bug free
-//11/19/2019 added different chart type
+//11/16/2018 Apexchart fully intergared bug free
+//11/19/2018 added different chart type
+//10/14/2019 - bug fixes
 
 // Reference locations
 let wage = document.getElementById("hourWage");
@@ -60,9 +61,16 @@ function checkForm() {
 //Input field has focus
 wage.focus();
 
+//checks class of status
+let statusClass = () => {
+  console.log(status.classList.value);
+  status.textContent = status.classList.value;
+}
+
 // Event listner for buttons.
 // Main event listners in check status
 check.addEventListener("click", checkStatus);
+check.addEventListener("click", statusClass);
 
 //Buttons
 ft.addEventListener("click", addFT);
@@ -128,7 +136,7 @@ function getChart(type) {
   chart.style.visibility = "inherit";
   chart.innerHTML = "";
   //Update values when function runs
-  rate = graphWage.value;
+  // rate = graphWage.value;
   weekRate = rate * customForm.value;
 
   // Check to see which dataset to use for graph
@@ -148,7 +156,7 @@ function getChart(type) {
     let threeMonth = Math.floor(rate * dataSet[3]);
     let oneMonth = Math.floor(rate * dataSet[4]);
 
-    if (graphWage.value) {
+    if (rate) {
       let options = {
         chart: {
           height: 400,
@@ -163,7 +171,7 @@ function getChart(type) {
         xaxis: {
           categories: ["1", "3", "6", "9", "12"],
           title: {
-            text: "Month(s)",
+            text: "Months",
             style: {
               fontSize: "20px"
             }
@@ -194,7 +202,7 @@ function compareGraph(time, type) {
   let hour1 = hourWage.value;
   let hour2 = customForm.value;
 
-  //Calculating and values pushing to empty array
+  //Calculating and values pushing to empty array(s)
   time.forEach(hour => {
     let sal1 = hour1 * hour;
     let sal2 = hour2 * hour;
@@ -242,6 +250,7 @@ function compareGraph(time, type) {
   }
   salWarn();
 }
+
 function calResults(
   oneYear,
   nineMonth,
@@ -502,7 +511,7 @@ function addCustom() {
 
 function addCompare() {
   salOut.style.display = "none";
-  status.classList.remove("full", "custom", "annaul");
+  status.classList.remove("full", "custom", "annual");
   customForm.style.display = "none";
   output.style.display = "none";
   warning.style.display = "none";
@@ -513,6 +522,7 @@ function addCompare() {
   hourWage.placeholder = "Hourly Rate #1";
   customForm.placeholder = "Hourly Rate #2";
   intWarning.style.display = "none";
+
   //change button color when clicked
   ft.classList.remove("btn-danger");
   ft.classList.add("btn-primary");
@@ -629,9 +639,9 @@ function intWarn() {
                           </div>`;
 }
 //Run clear form every second
-setInterval(emptyForm, 100);
+setInterval(emptyForm, 1000);
 
-// let graphs = ["area", "bar", "histogram", "scatter", "line"];
+// Event handlers for graph buttons
 let area = document.getElementById("area");
 let bar = document.getElementById("bar");
 let histogram = document.getElementById("histogram");
