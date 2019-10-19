@@ -1,4 +1,4 @@
-# SalaryCalculator
+# Salary Calculator
 
 A salary calculator made with vanilla Javascript
 
