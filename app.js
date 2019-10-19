@@ -1149,29 +1149,29 @@ function compareSalaries() {
                         </h4>
 
                         <hr>
-                        
-                        <strong class="title">Annual Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneYear.toLocaleString()}</span> 
+
+                        <strong class="title">Annual Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneYear.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${oneYear2.toLocaleString()}</span><br>
 
-                        <strong class="title">9 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${nineMonth2.toLocaleString()}</span> 
+                        <strong class="title">9 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${nineMonth2.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${nineMonth.toLocaleString()}</span><br>
-                        
-                        <strong class="title">6 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${sixMonth.toLocaleString()}</span> 
+
+                        <strong class="title">6 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${sixMonth.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${sixMonth2.toLocaleString()}</span><br>
 
-                        <strong class="title">3 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${threeMonth.toLocaleString()}</span> 
+                        <strong class="title">3 Months Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${threeMonth.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${threeMonth2.toLocaleString()}</span><br>
 
-                        <strong class="title">1 Month Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneMonth.toLocaleString()}</span> 
+                        <strong class="title">1 Month Salary:</strong><span class="dollar">$</span> <span class="rateColor1">${oneMonth.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${oneMonth2.toLocaleString()}</span><br>
 
-                        <strong class="title">Biweekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${biWeekly.toLocaleString()}</span> 
+                        <strong class="title">Biweekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${biWeekly.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${biWeekly2.toLocaleString()}</span><br>
 
-                        <strong class="title">Weekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${weeklyCheck.toLocaleString()}</span> 
+                        <strong class="title">Weekly Check:</strong><span class="dollar">$</span> <span class="rateColor1">${weeklyCheck.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${weeklyCheck2.toLocaleString()}</span><br>
 
-                        <strong class="title">Overtime Rate:</strong><span class="dollar">$</span> <span class="rateColor1">${overTime.toLocaleString()}</span> 
+                        <strong class="title">Overtime Rate:</strong><span class="dollar">$</span> <span class="rateColor1">${overTime.toLocaleString()}</span>
                         | <span class="dollar">$</span><span class="rateColor2">${overTime2.toLocaleString()}</span><br>
                        </div>`;
 }
