@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //1/8/2018  v0.06
 //1/14/2018  v0.07 salary to Hour added
 //1/29/2018  v0.08 Tweak decimal points position.
