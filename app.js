@@ -32,6 +32,7 @@ let updateChart = document.querySelector("#chart");
 let salOut = document.querySelector("#salaryOutput");
 let chartType = document.querySelector("#chartBtn");
 chartType.value = "area";
+let zero = 0;
 
 //Hours worked
 let fullTimeHoursWorked = [2080, 1440, 960, 480, 160, 0];
@@ -136,7 +137,6 @@ function getChart(type) {
   chart.style.visibility = "inherit";
   chart.innerHTML = "";
   //Update values when function runs
-  // rate = graphWage.value;
   weekRate = rate * customForm.value;
 
   // Check to see which dataset to use for graph
@@ -149,6 +149,7 @@ function getChart(type) {
   } else if (status.classList.value == "annual") {
   }
 
+  // Create graph
   function graphData(rate, dataSet) {
     let oneYear = Math.floor(rate * dataSet[0]);
     let nineMonth = Math.floor(rate * dataSet[1]);
@@ -159,17 +160,17 @@ function getChart(type) {
     if (rate) {
       let options = {
         chart: {
-          height: 400,
+          // height: 400,
           type: `${type}`
         },
         series: [
           {
             name: "Salary",
-            data: [oneMonth, threeMonth, sixMonth, nineMonth, oneYear]
+            data: [zero, oneMonth, threeMonth, sixMonth, nineMonth, oneYear] /*data values*/
           }
         ],
         xaxis: {
-          categories: ["1", "3", "6", "9", "12"],
+          categories: ["0", "1", "3", "6", "9", "12"],
           title: {
             text: "Months",
             style: {
@@ -217,15 +218,15 @@ function compareGraph(time, type) {
     series: [
       {
         name: "Salary 1",
-        data: [newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
+        data: [zero, newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
       },
       {
         name: "Salary 2",
-        data: [newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
+        data: [zero, newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
       }
     ],
     xaxis: {
-      categories: [1, 3, 6, 9, 12]
+      categories: [0, 1, 3, 6, 9, 12]
     }
   };
 
@@ -234,17 +235,17 @@ function compareGraph(time, type) {
     chart.render();
     updateChart.classList.replace("create", "update");
     salWarn();
-  } else if ((updateChart.classList.value = "update")) {
+  } else if (updateChart.classList.value = "update") {
     let chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
     chart.updateSeries([
       {
         name: "Salary 1",
-        data: [newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
+        data: [zero, newData1[4], newData1[3], newData1[2], newData1[1], newData1[0]]
       },
       {
         name: "Salary 2",
-        data: [newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
+        data: [zero, newData2[4], newData2[3], newData2[2], newData2[1], newData2[0]]
       }
     ]);
   }
@@ -287,6 +288,7 @@ function ftSalary() {
   let overTime = wage.value * 1.5;
   let biWeekly = Math.floor(wage.value * 80);
 
+  // Calculate results and output data
   calResults(
     oneYear,
     nineMonth,
@@ -302,11 +304,9 @@ function ftSalary() {
   warning.style.display = "inherit"; // Disclaimer
   ft.style.visibility = "visible"; // Button displays
   pt.style.visibility = "visible";
-  warning.textContent =
-    "*Results based on 40 hour work week. Gross income, taxes not included.";
+  warning.textContent = "*Results based on 40 hour work week. Gross income, taxes not included.";
 
-  status.classList.remove("custom");
-  status.classList.remove("part");
+  status.classList.remove("custom", "part");
   customForm.style.display = "none";
   status.classList.add("full");
   status.innerHTML = "<strong>Full-Time Hours</strong>";
@@ -337,14 +337,14 @@ function ptSalary() {
   output.style.display = "inherit";
   ft.style.visibility = "visible";
   pt.style.visibility = "visible";
-  warning.textContent =
-    "*Results based on 29 hour work week. Gross income, taxes not included.";
+  warning.textContent = "*Results based on 29 hour work week. Gross income, taxes not included.";
 
   status.classList.remove("full");
   status.classList.add("part");
   status.innerHTML = "<strong>Part-Time Hours</strong>";
 }
 
+// Calculate custom hours worked.
 function customHours() {
   let pay = wage.value;
   let hours = customForm.value;
@@ -392,8 +392,7 @@ function customHours() {
                         </div>`;
   }
   warning.style.display = "inherit";
-  warning.textContent =
-    "*Results based on custom hour work week. Gross income, taxes not included.";
+  warning.textContent = "*Results based on custom hour work week. Gross income, taxes not included.";
 }
 
 function findHourly() {
@@ -511,12 +510,13 @@ function addCustom() {
 
 function addCompare() {
   salOut.style.display = "none";
-  status.classList.remove("full", "custom", "annual");
+  status.classList.remove("full", "custom", "annual", "part");
   customForm.style.display = "none";
   output.style.display = "none";
   warning.style.display = "none";
   chart.innerHTML = "";
   chart.style.visibility = "hidden";
+  chartType.style.display = "none";
   status.classList.add("compare");
   customForm.style.display = "inherit";
   hourWage.placeholder = "Hourly Rate #1";
@@ -540,7 +540,7 @@ function addPT() {
   wage.value = "";
   chart.innerHTML = "";
   chart.style.visibility = "hidden";
-  status.classList.remove("full", "custom", "annaul");
+  status.classList.remove("full", "custom", "annual", "compare");
   compare.classList.remove("btn-danger");
   customForm.style.display = "none";
   status.classList.add("part");
@@ -562,7 +562,7 @@ function addFT() {
   wage.value = "";
   chart.style.visibility = "hidden";
   chart.innerHTML = "";
-  status.classList.remove("part", "custom", "annaul", "compare");
+  status.classList.remove("part", "custom", "annual", "compare");
   compare.classList.remove("btn-danger");
   customForm.style.display = "none";
   status.classList.add("full");
@@ -639,44 +639,25 @@ function intWarn() {
                           </div>`;
 }
 //Run clear form every second
-setInterval(emptyForm, 1000);
+setInterval(emptyForm, 100);
 
 // Event handlers for graph buttons
 let area = document.getElementById("area");
-let bar = document.getElementById("bar");
-let histogram = document.getElementById("histogram");
 let line = document.getElementById("line");
 let scatter = document.getElementById("scatter");
 
 area.addEventListener("click", areaFunc);
-bar.addEventListener("click", barFunc);
-histogram.addEventListener("click", hisFunc);
 line.addEventListener("click", lineFunc);
 scatter.addEventListener("click", scatFunc);
 
 function areaFunc() {
   let chart = chartType.value;
   chart = "area";
-  if (status.classList.value == "compare") {
-    compareGraph(fullTimeHoursWorked, chart);
-  } else {
-    getChart(chart);
-  }
-}
 
-function barFunc() {
-  let chart = chartType.value;
-  chart = "bar";
-  if (status.classList.value == "compare") {
-    compareGraph(fullTimeHoursWorked, chart);
-  } else {
-    getChart(chart);
-  }
-}
+  area.classList.replace("btn-warning", "btn-danger")
+  line.classList.replace("btn-danger", "btn-warning")
+  scatter.classList.replace("btn-danger", "btn-warning")
 
-function hisFunc() {
-  let chart = chartType.value;
-  chart = "histogram";
   if (status.classList.value == "compare") {
     compareGraph(fullTimeHoursWorked, chart);
   } else {
@@ -687,6 +668,11 @@ function hisFunc() {
 function lineFunc() {
   let chart = chartType.value;
   chart = "line";
+  //update button colors
+  scatter.classList.replace("btn-danger", "btn-warning")
+  area.classList.replace("btn-danger", "btn-warning")
+  line.classList.replace("btn-warning", "btn-danger")
+
   if (status.classList.value == "compare") {
     compareGraph(fullTimeHoursWorked, chart);
   } else {
@@ -697,6 +683,11 @@ function lineFunc() {
 function scatFunc() {
   let chart = chartType.value;
   chart = "scatter";
+
+  scatter.classList.replace("btn-warning", "btn-danger")
+  area.classList.replace("btn-danger", "btn-warning")
+  line.classList.replace("btn-danger", "btn-warning")
+
   if (status.classList.value == "compare") {
     compareGraph(fullTimeHoursWorked, chart);
   } else {
