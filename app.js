@@ -13,6 +13,7 @@
 //11/16/2018 Apexchart fully intergared bug free
 //11/19/2018 added different chart type
 //10/14/2019 - bug fixes
+//11/19/2019 - bug fixes/ ui clean up 
 
 // Reference locations
 let wage = document.getElementById("hourWage");
